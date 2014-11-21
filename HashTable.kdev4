@@ -1,0 +1,4 @@
+[Project]
+Name=HashTable
+Manager=KDevCustomMakeManager
+VersionControl=kdevgit
