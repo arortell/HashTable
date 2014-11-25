@@ -1,10 +1,13 @@
 
 #include "hashTable.h"
+#include <stdbool.h>
+
 
 table_node hash_table[TABLE_LENGTH];
 
+bool loaded = true;
 
-//TODO: Error checking
+//assigning letters a-z to table nodes for buckets
 void key_hash_t( ) 
 {
 	char key = 'a';
@@ -14,8 +17,12 @@ void key_hash_t( )
 	}
 }
 
-//TODO: return and error checking 'WILL THIS MAKE AN EXTRA NODE'
-bool load_hash_t(char *file_name)
+/*TODO: error checking 
+ * I think this 'WILL THIS MAKE AN EXTRA NODE'
+ *
+ * 
+ **/
+bool load_hash_t(const char *file_name)
 {
 	char word[WORD_LENGTH];
 	char c;
@@ -25,7 +32,7 @@ bool load_hash_t(char *file_name)
 	if (file == NULL)
 	{
 		printf ("File not found...\n");
-		exit(1);
+		return false;
 	}
 
 	for (int word_count = 0; word_count < size; word_count++) 
@@ -36,7 +43,7 @@ bool load_hash_t(char *file_name)
 		if (new_node == NULL)
 		{
 			printf ("Failed to allocate memory...\n");
-			exit(1);
+			return false;
 		}
 
 		new_node->next = NULL;
@@ -46,8 +53,11 @@ bool load_hash_t(char *file_name)
 			word[index] = c;
 			index++;
 		}
-
-		hash_val = hash(word);         
+		
+		//this might be bad
+		word[index] ='\0';
+		
+		hash_val = hash(word);
 
 		for (int j = 0; j < index; j++)
 		{
@@ -72,7 +82,10 @@ bool load_hash_t(char *file_name)
 	return true;
 }
 
-// TODO: return && error checking
+/**
+ * Free all nodes created
+ * in load_hash_t
+ **/
 bool unload_hash_t( )
 {
 	/**
@@ -94,8 +107,11 @@ bool unload_hash_t( )
 	return true;
 }
 
-//TODO: error checking
-int get_file_size(char *file_name)
+/**
+ * get size of dictionary file 
+ * for load function
+ * */
+int get_file_size(const char *file_name)
 {
 	char c;
 	int line_count = 0;
@@ -104,7 +120,7 @@ int get_file_size(char *file_name)
 	if (file == NULL)
 	{
 		printf("File not found..\n");
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	while ((c = fgetc(file)) != EOF)
@@ -119,37 +135,82 @@ int get_file_size(char *file_name)
 	return line_count;
 }
 
-//TODO: error checking
-int hash(char *str)
+/**
+ * convert first char to lowercase
+ * subtract by 97 to give correct 
+ * array index
+ **/
+int hash(const char *str)
 {
 	if (str == NULL)
 	{
 		printf("NULL pointer..\n");
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 	return (tolower(str[0]) - 97);
 }
 
+/**
+ * loop threw array to find bucket
+ * traverse list to find word
+ * return true if found false if not
+ */
 bool check(const char* word)
 {
-	/**
-	 * loop threw array to find bucket
-	 * traverse list to find word
-	 * return true if found false if not
-	 */
-	return true;
+	//hash word
+	int hash_val = hash(word); 
+
+	//must reassign to make editable
+	char *eword = strdup(word);
+
+	//convert word to lower
+	word_tolower(eword);
+
+	node *cursor = NULL;
+	
+	//iterate table array to find bucket
+	for (int i = 0; i  < TABLE_LENGTH; i ++)
+	{
+		cursor = hash_table[hash_val].next;
+
+		//traverse list for bucket hash_val
+		while (cursor != NULL)
+		{
+			if (strcmp(eword, cursor->word) == 0)
+			{
+				free(eword);
+				eword = NULL;
+				return true;
+			}
+			else
+			{
+				cursor = cursor->next;
+			}
+		}
+	}
+	free(eword);
+	eword = NULL;
+	return false;
 }
 
- //TODO: error checking "check if bucket is empty", return 0 if not loaded
+/**
+ * iterate through array and
+ * traverse each list counting each node
+ * as I go by
+ **/
 unsigned int size( )
 {
+	if (!loaded)
+	{
+		printf("Dictionary not loaded..\n");
+		return 0;
+	}
 	node *cursor = NULL;
 	int node_count = 0;
-
+		
 	for (int i = 0; i < TABLE_LENGTH; i++)
 	{
 		cursor = hash_table[i].next;
-		
 		while (cursor != NULL)
 		{
 			node_count++;
@@ -157,4 +218,23 @@ unsigned int size( )
 		}
 	}
 	return node_count;
+}
+
+/**
+ *Convert all chars in word
+ *to lowercase to compare
+ *to strings in dict file 
+ **/
+void word_tolower(char* word)
+{
+	if (word == NULL)
+	{
+		printf("NULL pointer ...\n");
+		exit(EXIT_FAILURE);
+	}
+
+	for (int i = 0, length = strlen(word); i  < length; i ++)
+	{
+		word[i] = tolower(word[i]);
+	}
 }

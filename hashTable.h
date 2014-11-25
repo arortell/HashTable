@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
-
+#include <string.h>
 
 //struct used to hold each word
 typedef struct node 
@@ -26,19 +26,20 @@ typedef struct table_node
 	
 } table_node;
 
-//TODO: FILE needs to be char*
-int get_file_size(char *file);
+int get_file_size(const char *file);
 
-void key_hash_t(char *file); 
+void key_hash_t(const char *file); 
 
-bool load_hash_t(char *file);
+bool load_hash_t(const char *file);
 
 bool unload_hash_t( );
 
-int hash(char *str);
+int hash(const char *str);
 
 unsigned int size( );
 
 bool check(const char* word);
+
+void word_tolower(char *word);
 
 #endif
