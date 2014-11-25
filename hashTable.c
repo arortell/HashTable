@@ -17,7 +17,7 @@ void key_hash_t( )
 	}
 }
 
-/*TODO: error checking 
+/*TODO: 
  * I think this 'WILL THIS MAKE AN EXTRA NODE'
  *
  * 
@@ -48,35 +48,28 @@ bool load_hash_t(const char *file_name)
 
 		new_node->next = NULL;
 		
+		//read word from file
 		while ((c = fgetc(file)) != '\n')
 		{
 			word[index] = c;
 			index++;
 		}
 		
-		//this might be bad
+		//terminate string
 		word[index] ='\0';
 		
+		//hash word
 		hash_val = hash(word);
-
-		for (int j = 0; j < index; j++)
-		{
-			new_node->word[j] = word[j];
-		}
-
+	
+		//copy string into node
+		strcpy(new_node->word, word);
+	
+		//reset index
 		index = 0;
 
-		// if this bucket has no nodes yet add it here
-		if (hash_table[hash_val].next == NULL)
-		{
-			hash_table[hash_val].next = new_node;
-		}
-		else
-		{
-			//add new  node to end of list
-			new_node->next = hash_table[hash_val].next;
-			hash_table[hash_val].next = new_node;
-		}
+		//add new  node to list
+		new_node->next = hash_table[hash_val].next;
+		hash_table[hash_val].next = new_node;
 	}
 	fclose(file);
 	return true;
@@ -179,7 +172,6 @@ bool check(const char* word)
 			if (strcmp(eword, cursor->word) == 0)
 			{
 				free(eword);
-				eword = NULL;
 				return true;
 			}
 			else
@@ -189,7 +181,6 @@ bool check(const char* word)
 		}
 	}
 	free(eword);
-	eword = NULL;
 	return false;
 }
 

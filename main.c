@@ -5,9 +5,9 @@
 
 int main(int argc, char **argv) 
 {
-	char *file_name = "small";
+	char *file_name = "large";
 	
-	char *word = "aArdVark's";
+	char *word = "shit";
 	
 	
 	key_hash_t(file_name);
@@ -25,16 +25,6 @@ int main(int argc, char **argv)
 	int uisize = size();
 	unload_hash_t();
 	
-	
-	
-	//word_tolower(word);
-	
-// 	for(int i=0, n = strlen(word); i < n; i++)
-// 	{
-// 		printf("%c ", word[i]);
-// 		
-// 	}
-// 	
 	
 	printf("Number of nodes = (%ui)\n", uisize);
 	//printf("Number of chars in %s = (%lu)\n", word, strlen(word));
